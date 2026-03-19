@@ -1,0 +1,25 @@
+# ansible/templates/galera.cnf.j2
+[galera]
+# Forzar replicación Galera
+binlog_format=ROW
+default-storage-engine=innodb
+innodb_autoinc_lock_mode=2
+bind-address=0.0.0.0
+
+# Proveedor de Galera
+wsrep_on=ON
+wsrep_provider=/usr/lib/galera/libgalera_smm.so
+
+# Configuración del Clúster
+wsrep_cluster_name="mi_laboratorio_galera"
+# Aquí Ansible pondrá las IPs de los 3 nodos separadas por comas
+wsrep_cluster_address="gcomm://192.168.100.11,192.168.100.12,192.168.100.13"
+
+# Configuración del Nodo Específico
+# {{ inventory_hostname }} se reemplazará por node1, node2 o node3
+wsrep_node_name="{{ inventory_hostname }}"
+# {{ ansible_host }} se reemplazará por la IP específica del nodo
+wsrep_node_address="{{ ansible_host }}"
+
+# Método de transferencia de estado (State Snapshot Transfer)
+wsrep_sst_method=rsync

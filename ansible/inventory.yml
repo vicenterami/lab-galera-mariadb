@@ -1,0 +1,15 @@
+# ansible/inventory.yml
+all:
+  children:
+    galera_cluster:
+      hosts:
+        node1:
+          ansible_host: 192.168.100.11
+        node2:
+          ansible_host: 192.168.100.12
+        node3:
+          ansible_host: 192.168.100.13
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ~/.ssh/id_ed25519 # Ruta a tu llave privada
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no' # ¡Truco para que no moleste el fingerprint en el lab!

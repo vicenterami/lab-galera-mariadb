@@ -63,7 +63,7 @@ resource "libvirt_domain" "galera_node" {
 
   network_interface {
     network_id     = libvirt_network.galera_net.id
-    wait_for_lease = true
+    wait_for_lease = false
   }
 
   disk {

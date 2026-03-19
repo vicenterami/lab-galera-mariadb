@@ -1,0 +1,35 @@
+# ansible/playbook.yml
+---
+- name: Instalar y configurar MariaDB Galera Cluster
+  hosts: galera_cluster
+  become: yes # Esto le dice a Ansible que ejecute los comandos como 'root' (sudo)
+
+  tasks:
+    - name: Actualizar el caché de apt
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600 # No actualiza si se hizo hace menos de 1 hora
+
+    - name: Instalar MariaDB Server, Client y Galera
+      ansible.builtin.apt:
+        name:
+          - mariadb-server
+          - mariadb-client
+          - galera-4 # El paquete que permite la replicación multi-maestro
+          - rsync    # Usado por Galera para transferir el estado inicial (SST)
+        state: present
+
+    - name: Asegurar que el servicio de MariaDB esté detenido antes de configurar el clúster
+      # Es crucial detener la base de datos antes de inyectar la configuración del clúster
+      ansible.builtin.service:
+        name: mariadb
+        state: stopped
+
+    - name: Configurar archivo de Galera (galera.cnf)
+      # Inyectamos la configuración que une a los tres nodos
+      ansible.builtin.template:
+        src: templates/galera.cnf.j2
+        dest: /etc/mysql/mariadb.conf.d/99-galera.cnf
+        owner: root
+        group: root
+        mode: '0644'
