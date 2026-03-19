@@ -35,3 +35,21 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# --- Reglas de Seguridad Extra ---
+
+# Llaves SSH y certificados
+*.pem
+*.key
+*.pub
+id_rsa
+id_ed25519
+
+# Archivos de variables de Ansible y Terraform (Contraseñas)
+secretos.yml
+vault.yml
+*.tfvars
+
+# Historiales y logs de SO
+*.log
+.bash_history
