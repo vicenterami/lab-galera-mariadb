@@ -33,7 +33,7 @@
         owner: root
         group: root
         mode: '0644'
-        
+
     - name: Instalar Keepalived en todos los nodos
       ansible.builtin.apt:
         name: keepalived
@@ -61,4 +61,25 @@
         state: restarted
         enabled: yes
       when: inventory_hostname in ['node1', 'node2']
+      become: yes
+
+    - name: Instalar HAProxy
+      ansible.builtin.apt:
+        name: haproxy
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Configurar HAProxy
+      ansible.builtin.template:
+        src: templates/haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+      become: yes
+      notify: Reiniciar HAProxy
+
+  handlers:
+    - name: Reiniciar HAProxy
+      ansible.builtin.service:
+        name: haproxy
+        state: restarted
       become: yes

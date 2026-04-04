@@ -231,3 +231,8 @@ ansible -i ansible/inventory.yml node2 -m command -a 'mysql -e "SHOW STATUS LIKE
 El tamaño (wsrep_cluster_size) se redujo a 2. A pesar de la falla del líder, la base de datos se mantuvo operativa, transaccional y sin interrupción para los clientes. ¡Alta Disponibilidad comprobada!
 
 ---
+
+## ⚖️ Balanceo de Carga con HAProxy
+Para evitar sobrecargar un solo nodo, se implementó HAProxy en todos los servidores escuchando en el puerto `3307`. 
+- **Flujo:** Cliente -> VIP (192.168.100.200) -> Puerto 3307 (HAProxy) -> Puerto 3306 (MariaDB Node 1, 2 o 3).
+- Se configuró el algoritmo `roundrobin` y un usuario dedicado `admin` para las conexiones.
