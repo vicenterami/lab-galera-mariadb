@@ -33,3 +33,32 @@
         owner: root
         group: root
         mode: '0644'
+        
+    - name: Instalar Keepalived en todos los nodos
+      ansible.builtin.apt:
+        name: keepalived
+        state: present
+        update_cache: yes
+      become: yes
+
+    - name: Configurar Keepalived en Node 1 (Master)
+      copy:
+        src: keepalived-node1.conf
+        dest: /etc/keepalived/keepalived.conf
+      when: inventory_hostname == 'node1'
+      become: yes
+
+    - name: Configurar Keepalived en Node 2 (Backup)
+      copy:
+        src: keepalived-node2.conf
+        dest: /etc/keepalived/keepalived.conf
+      when: inventory_hostname == 'node2'
+      become: yes
+
+    - name: Reiniciar y habilitar Keepalived (Solo Node 1 y 2)
+      service:
+        name: keepalived
+        state: restarted
+        enabled: yes
+      when: inventory_hostname in ['node1', 'node2']
+      become: yes
