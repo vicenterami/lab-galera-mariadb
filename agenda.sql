@@ -28,23 +28,23 @@ CREATE TABLE telefonos (
     FOREIGN KEY (contacto_id) REFERENCES contactos(id)
 );
 
--- Insertar usuarios
-INSERT INTO usuarios (nombre, email, ciudad) VALUES
-('Ana Pérez', 'ana@example.com', 'Santiago'),
-('Luis Gómez', 'luis@example.com', 'Valparaíso'),
-('Carla Rojas', 'carla@example.com', 'Concepción');
+-- Insertar usuarios (Forzando IDs)
+INSERT INTO usuarios (id, nombre, email, ciudad) VALUES
+(1, 'Ana Pérez', 'ana@example.com', 'Santiago'),
+(2, 'Luis Gómez', 'luis@example.com', 'Valparaíso'),
+(3, 'Carla Rojas', 'carla@example.com', 'Concepción');
 
--- Insertar contactos
-INSERT INTO contactos (usuario_id, nombre, relacion) VALUES
-(1, 'María Pérez', 'Hermana'),
-(1, 'Juan Soto', 'Amigo'),
-(2, 'Pedro Gómez', 'Padre'),
-(3, 'Laura Rojas', 'Madre');
+-- Insertar contactos (Forzando IDs)
+INSERT INTO contactos (id, usuario_id, nombre, relacion) VALUES
+(1, 1, 'María Pérez', 'Hermana'),
+(2, 1, 'Juan Soto', 'Amigo'),
+(3, 2, 'Pedro Gómez', 'Padre'),
+(4, 3, 'Laura Rojas', 'Madre');
 
--- Insertar teléfonos
-INSERT INTO telefonos (contacto_id, numero, tipo) VALUES
-(1, '912345678', 'Móvil'),
-(1, '221234567', 'Fijo'),
-(2, '934567890', 'Móvil'),
-(3, '945678901', 'Móvil'),
-(4, '956789012', 'Móvil');
+-- Insertar teléfonos (Forzando IDs)
+INSERT INTO telefonos (id, contacto_id, numero, tipo) VALUES
+(1, 1, '912345678', 'Móvil'),
+(2, 1, '221234567', 'Fijo'),
+(3, 2, '934567890', 'Móvil'),
+(4, 3, '945678901', 'Móvil'),
+(5, 4, '956789012', 'Móvil');
