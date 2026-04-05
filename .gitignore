@@ -55,7 +55,7 @@ vault.yml
 .bash_history
 
 # Archivos de empaquetado
-.tar.gz
++.tar.gz
 *.zip
 *.tar
 *.tar.bz2
