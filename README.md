@@ -174,13 +174,11 @@ El playbook de Ansible preparó las máquinas mediante un despliegue automatizad
 ```bash
 ansible-playbook -i ansible/inventory.yml ansible/playbook.yml -b
 ```
-### ¿Qué hizo el Playbook?
-
-- Instaló mariadb-server, galera-4, rsync y keepalived.
-
-- Copió la plantilla galera.cnf.j2 a cada nodo insertando dinámicamente sus IPs.
-
-- Distribuyó las configuraciones de Keepalived (Master para Node 1 y Backup para Node 2) estableciendo la IP Virtual 192.168.100.200.
+**¿Qué hace el Playbook actualmente?**
+- Instala MariaDB, Galera, Keepalived y **HAProxy** en todos los nodos.
+- Configura la **IP Virtual (192.168.100.200)** entre Node 1 y Node 2.
+- Configura **HAProxy (Puerto 3307)** para balancear la carga entre los 3 nodos usando Round Robin.
+- **Automatización de Usuarios:** Crea automáticamente el usuario `admin` y el usuario de salud `haproxy` en el Nodo 1 (replicándose al clúster).
 
 
 ### 3. Recuperación y Arranque del Clúster (Troubleshooting Real)
@@ -200,6 +198,14 @@ Finalmente, iniciamos el servicio en los nodos restantes, los cuales se sincroni
 ```bash
 ansible -i ansible/inventory.yml node2,node3 -m service -a "name=mariadb state=started" -b
 ```
+
+### 4. Verificación del Balanceo de Carga (HAProxy)
+Para comprobar que el tráfico se distribuye equitativamente a través de la VIP:
+```bash
+# Ejecutar este comando varias veces desde tu máquina host
+ansible -i ansible/inventory.yml node3 -m command -a "mysql -h 192.168.100.200 -P 3307 -u admin -padmin123 -e 'SHOW VARIABLES LIKE \"hostname\";'" -b
+```
+
 ## 🌪️ Pruebas de Caos (Chaos Engineering)
 
 Para comprobar la resiliencia absoluta del sistema, simulamos apagones catastróficos usando KVM (virsh destroy).
@@ -229,6 +235,14 @@ ansible -i ansible/inventory.yml node2 -m command -a 'mysql -e "SHOW STATUS LIKE
 ```
 
 El tamaño (wsrep_cluster_size) se redujo a 2. A pesar de la falla del líder, la base de datos se mantuvo operativa, transaccional y sin interrupción para los clientes. ¡Alta Disponibilidad comprobada!
+
+### Prueba 3: Supervivencia del Balanceo y la VIP
+1. "Matamos" al nodo que tiene la VIP actualmente (ej. Node 1).
+2. Verificamos que la VIP se mueve al Node 2.
+3. Volvemos a lanzar la consulta de balanceo a la VIP:
+```bash
+ansible -i ansible/inventory.yml node3 -m command -a "mysql -h 192.168.100.200 -P 3307 -u admin -padmin123 -e 'SHOW VARIABLES LIKE \"hostname\";'" -b
+```
 
 ---
 

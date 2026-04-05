@@ -53,3 +53,9 @@ vault.yml
 # Historiales y logs de SO
 *.log
 .bash_history
+
+# Archivos de empaquetado
+.tar.gz
+*.zip
+*.tar
+*.tar.bz2
